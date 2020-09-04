@@ -1,0 +1,77 @@
+public class Sudoku {
+
+	public static void main(String[] args) {
+
+		char[][] puzzle = SudokuP.puzzle();
+		
+		System.out.println(SudokuCheck.check(puzzle) + "\n");
+		
+		System.out.println("Starting Board: \n");
+		printPuzzle(puzzle);
+		System.out.println("\nGame Board: \n");
+		if(solve(puzzle) == false)
+			System.out.println("This puzzle is valid but is not solvable.");
+		
+	}
+	
+	public static boolean solve(char[][] puzzle) {
+		/// PURPOSE: ATTEMPT TO SOLVE THE SUDOKU PUZZLE
+				for(int row=0; row<9; row++) {
+					for(int col=0;col<9; col++) {
+						// IF [row][col] IS A '.'
+						if(puzzle[row][col] == '.') {
+							for(char num = '1'; num <= '9'; num++) {
+								// IF NUM AT [row][col] IS VALID
+								if(validPlacement(puzzle, row, col, num)) {
+									// [row][col] IS NO LONGER A '.'
+									puzzle[row][col] = num;
+									// BACKTRACK FOR THE OTHER '.'
+									if(solve(puzzle))
+										return true;
+								}
+							}
+							// WILL RETURN FALSE IF PUZZLE IS UNSOLVABLE
+							puzzle[row][col] = '.';
+							return false;
+						}
+					}
+				}
+				// PUZZLE HAS BEEN SOLVED. DISPLAY THE SOLVED PUZZLE AND RETURN TRUE.
+				printPuzzle(puzzle);
+				return true;
+		}
+		
+		public static void printPuzzle(char[][] puzzle) {
+		/// PURPOSE: TO DISPLAY THE SUDOKU PUZZLE
+			for(int row = 0; row < 9; row++) {
+				for(int col = 0; col < 9; col++) {
+					System.out.print(puzzle[row][col]+ " ");
+				}
+				System.out.println();
+			}
+		}
+		public static boolean numIn3x3(char[][] puzzle, int r, int c, char num) {
+		/// PURPOSE: TO CHECK IF THE NUM GIVEN IN SOLVE() CAN BE PLACED IN THE INDEX WITHOUT CAUSING AN INVALID 3X3 MATRIX
+		/// CALLED IN validPlacement()
+			int row = r - r%3;
+			int col = c - c%3;
+			for(int i = row; i < row+3; i++) {
+				for(int j = col; j < col+3; j++) {
+					if(puzzle[i][j]== num) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		public static boolean validPlacement(char[][] puzzle, int row, int col, char num) {
+		/// PURPOSE: CHECK IF NUM CAN BE PLACED AT [row][col] AND STILL BE VALID
+			for(int i = 0; i < 9; i++) {
+				if((puzzle[row][i] == num) || (puzzle[i][col] == num) || (numIn3x3(puzzle, row, col, num) ==true)) {
+					return false;
+				}
+			}
+			return true;
+		}
+}
